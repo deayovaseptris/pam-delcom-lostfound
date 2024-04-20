@@ -13,6 +13,12 @@
         android:theme="@style/Theme.LostFound"
         tools:targetApi="31">
         <activity
+            android:name=".presentation.lostfound.ObjectManageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.lostfound.ObjectDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.profile.ProfileActivity"
             android:exported="false" />
         <activity

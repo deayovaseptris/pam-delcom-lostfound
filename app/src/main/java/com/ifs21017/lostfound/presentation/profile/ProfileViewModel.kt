@@ -8,7 +8,7 @@ import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.data.remote.response.DataUserResponse
 import com.ifs21017.lostfound.data.repository.AuthRepository
 import com.ifs21017.lostfound.data.repository.UserRepository
-import com.ifs21017.lostfound.ViewModelFactory
+import com.ifs21017.lostfound.presentation.ViewModelFactory
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(

@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.ifs21017.lostfound.data.pref.UserModel
 import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.databinding.ActivityLoginBinding
-import com.ifs21017.lostfound.ViewModelFactory
+import com.ifs21017.lostfound.presentation.ViewModelFactory
 import com.ifs21017.lostfound.presentation.main.MainActivity
 import com.ifs21017.lostfound.presentation.register.RegisterActivity
 import kotlinx.coroutines.launch

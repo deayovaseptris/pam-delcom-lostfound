@@ -7,7 +7,7 @@ import com.ifs21017.lostfound.data.pref.UserModel
 import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.data.remote.response.DataLoginResponse
 import com.ifs21017.lostfound.data.repository.AuthRepository
-import com.ifs21017.lostfound.ViewModelFactory
+import com.ifs21017.lostfound.presentation.ViewModelFactory
 
 class LoginViewModel(
     private val authRepository: AuthRepository,

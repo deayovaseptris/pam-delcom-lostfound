@@ -13,17 +13,18 @@ class ObjectRepository private constructor(
     fun postObject(
         title: String,
         description: String,
+        status: String
     ) = flow {
         emit(MyResult.Loading)
         try {
-//get success message
+            //get success message
             emit(
                 MyResult.Success(
-                    apiService.postObject(title, description).data
+                    apiService.postObject(title, description, status).data
                 )
             )
         } catch (e: HttpException) {
-//get error message
+            //get error message
             val jsonInString = e.response()?.errorBody()?.string()
             emit(
                 MyResult.Error(
@@ -38,23 +39,25 @@ class ObjectRepository private constructor(
         objectId: Int,
         title: String,
         description: String,
-        isFinished: Boolean,
+        status: String,
+        is_completed: Boolean
     ) = flow {
         emit(MyResult.Loading)
         try {
-//get success message
+            //get success message
             emit(
                 MyResult.Success(
                     apiService.putObject(
                         objectId,
                         title,
                         description,
-                        if (isFinished) 1 else 0
+                        status,
+                        if (is_completed) 1 else 0
                     )
                 )
             )
         } catch (e: HttpException) {
-//get error message
+            //get error message
             val jsonInString = e.response()?.errorBody()?.string()
             emit(
                 MyResult.Error(
@@ -66,14 +69,14 @@ class ObjectRepository private constructor(
         }
     }
     fun getObjects(
-        isFinished: Int?,
+        is_completed: Int?,
     ) = flow {
         emit(MyResult.Loading)
         try {
-//get success message
-            emit(MyResult.Success(apiService.getObjects(isFinished)))
+            //get success message
+            emit(MyResult.Success(apiService.getObjects(is_completed)))
         } catch (e: HttpException) {
-//get error message
+            //get error message
             val jsonInString = e.response()?.errorBody()?.string()
             emit(
                 MyResult.Error(
@@ -89,10 +92,10 @@ class ObjectRepository private constructor(
     ) = flow {
         emit(MyResult.Loading)
         try {
-//get success message
+            //get success message
             emit(MyResult.Success(apiService.getObject(objectId)))
         } catch (e: HttpException) {
-//get error message
+            //get error message
             val jsonInString = e.response()?.errorBody()?.string()
             emit(
                 MyResult.Error(
@@ -108,10 +111,10 @@ class ObjectRepository private constructor(
     ) = flow {
         emit(MyResult.Loading)
         try {
-//get success message
+            //get success message
             emit(MyResult.Success(apiService.deleteObject(objectId)))
         } catch (e: HttpException) {
-//get error message
+            //get error message
             val jsonInString = e.response()?.errorBody()?.string()
             emit(
                 MyResult.Error(

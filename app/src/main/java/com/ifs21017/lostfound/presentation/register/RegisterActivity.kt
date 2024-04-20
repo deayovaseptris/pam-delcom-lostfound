@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.databinding.ActivityRegisterBinding
-import com.ifs21017.lostfound.ViewModelFactory
+import com.ifs21017.lostfound.presentation.ViewModelFactory
 import com.ifs21017.lostfound.presentation.login.LoginActivity
 
 class RegisterActivity : AppCompatActivity() {

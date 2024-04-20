@@ -1,4 +1,4 @@
-package com.ifs21017.lostfound
+package com.ifs21017.lostfound.presentation
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -8,6 +8,7 @@ import com.ifs21017.lostfound.data.repository.ObjectRepository
 import com.ifs21017.lostfound.data.repository.UserRepository
 import com.ifs21017.lostfound.di.Injection
 import com.ifs21017.lostfound.presentation.login.LoginViewModel
+import com.ifs21017.lostfound.presentation.lostfound.ObjectViewModel
 import com.ifs21017.lostfound.presentation.main.MainViewModel
 import com.ifs21017.lostfound.presentation.profile.ProfileViewModel
 import com.ifs21017.lostfound.presentation.register.RegisterViewModel
@@ -30,11 +31,15 @@ class ViewModelFactory(
             }
             modelClass.isAssignableFrom(MainViewModel::class.java) -> {
                 MainViewModel
-                    .getInstance(authRepository) as T
+                    .getInstance(authRepository, objectRepository) as T
             }
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
                 ProfileViewModel
                     .getInstance(authRepository, userRepository) as T
+            }
+            modelClass.isAssignableFrom(ObjectViewModel::class.java) -> {
+                ObjectViewModel
+                    .getInstance(objectRepository) as T
             }
             else -> throw IllegalArgumentException(
                 "Unknown ViewModel class: " + modelClass.name

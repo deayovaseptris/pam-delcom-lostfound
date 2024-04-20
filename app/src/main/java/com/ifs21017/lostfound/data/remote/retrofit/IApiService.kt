@@ -35,28 +35,30 @@ interface IApiService {
     suspend fun getMe(): DelcomUserResponse
 
     @FormUrlEncoded
-    @POST("objects")
+    @POST("lost-founds")
     suspend fun postObject(
         @Field("title") title: String,
         @Field("description") description: String,
+        @Field("status") status: String
     ): DelcomAddObjectResponse
     @FormUrlEncoded
-    @PUT("objects/{id}")
+    @PUT("lost-founds/{id}")
     suspend fun putObject(
         @Path("id") objectId: Int,
         @Field("title") title: String,
         @Field("description") description: String,
-        @Field("is_finished") isFinished: Int,
+        @Field("status") status: String,
+        @Field("is_completed") isCompleted: Int,
     ): DelcomResponse
-    @GET("objects")
+    @GET("lost-founds")
     suspend fun getObjects(
-        @Query("is_finished") isFinished: Int?,
+        @Query("is_completed") isCompleted: Int?,
     ): DelcomObjectsResponse
-    @GET("objects/{id}")
+    @GET("lost-founds/{id}")
     suspend fun getObject(
         @Path("id") objectId: Int,
     ): DelcomObjectResponse
-    @DELETE("objects/{id}")
+    @DELETE("lost-founds/{id}")
     suspend fun deleteObject(
         @Path("id") objectId: Int,
     ): DelcomResponse

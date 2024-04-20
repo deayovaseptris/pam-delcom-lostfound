@@ -11,7 +11,7 @@ import com.ifs21017.lostfound.R
 import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.data.remote.response.DataUserResponse
 import com.ifs21017.lostfound.databinding.ActivityProfileBinding
-import com.ifs21017.lostfound.ViewModelFactory
+import com.ifs21017.lostfound.presentation.ViewModelFactory
 import com.ifs21017.lostfound.presentation.login.LoginActivity
 
 class ProfileActivity : AppCompatActivity() {
