@@ -70,7 +70,7 @@ class ObjectManageActivity : AppCompatActivity() {
                 val title = etObjectManageTitle.text.toString()
                 val description = etObjectManageDesc.text.toString()
                 val status = etObjectManageStatus.selectedItem.toString()
-                val isCompleted = cbObjectDetailIsCompleted.isChecked
+
                 if (title.isEmpty() || description.isEmpty()) {
                     AlertDialog.Builder(this@ObjectManageActivity).apply {
                         setTitle("Oh No!")
@@ -81,13 +81,13 @@ class ObjectManageActivity : AppCompatActivity() {
                     }
                     return@setOnClickListener
                 }
-                observePostObject(title, description, status, isCompleted)
+                observePostObject(title, description, status)
             }
         }
     }
 
-    private fun observePostObject(title: String, description: String, status: String, isCompleted: Boolean) {
-        viewModel.postObject(title, description, status, isCompleted).observeOnce { result ->
+    private fun observePostObject(title: String, description: String, status: String) {
+        viewModel.postObject(title, description, status).observeOnce { result ->
             when (result) {
                 is MyResult.Loading -> {
                     showLoading(true)

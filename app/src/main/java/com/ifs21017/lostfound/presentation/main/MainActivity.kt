@@ -21,6 +21,7 @@ import com.ifs21017.lostfound.helper.Utils.Companion.observeOnce
 import com.ifs21017.lostfound.presentation.ViewModelFactory
 import com.ifs21017.lostfound.presentation.login.LoginActivity
 import com.ifs21017.lostfound.presentation.lostfound.ObjectDetailActivity
+import com.ifs21017.lostfound.presentation.lostfound.ObjectFavoriteActivity
 import com.ifs21017.lostfound.presentation.lostfound.ObjectManageActivity
 import com.ifs21017.lostfound.presentation.profile.ProfileActivity
 
@@ -74,6 +75,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.mainMenuLogout -> {
                     viewModel.logout()
                     openLoginActivity()
+                    true
+                }
+                R.id.mainMenuFavoriteTodos -> {
+                    openFavoriteObjectActivity()
                     true
                 }
                 else -> false
@@ -228,6 +233,13 @@ class MainActivity : AppCompatActivity() {
             ObjectManageActivity::class.java
         )
         intent.putExtra(ObjectManageActivity.KEY_IS_ADD, true)
+        launcher.launch(intent)
+    }
+    private fun openFavoriteObjectActivity() {
+        val intent = Intent(
+            this@MainActivity,
+            ObjectFavoriteActivity::class.java
+        )
         launcher.launch(intent)
     }
 }

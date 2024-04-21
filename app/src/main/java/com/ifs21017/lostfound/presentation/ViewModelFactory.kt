@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ifs21017.lostfound.data.repository.AuthRepository
+import com.ifs21017.lostfound.data.repository.LocalObjectRepository
 import com.ifs21017.lostfound.data.repository.ObjectRepository
 import com.ifs21017.lostfound.data.repository.UserRepository
 import com.ifs21017.lostfound.di.Injection
@@ -16,7 +17,8 @@ import com.ifs21017.lostfound.presentation.register.RegisterViewModel
 class ViewModelFactory(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val objectRepository: ObjectRepository
+    private val objectRepository: ObjectRepository,
+    private val localObjectRepository: LocalObjectRepository
 ) : ViewModelProvider.NewInstanceFactory() {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -39,7 +41,7 @@ class ViewModelFactory(
             }
             modelClass.isAssignableFrom(ObjectViewModel::class.java) -> {
                 ObjectViewModel
-                    .getInstance(objectRepository) as T
+                    .getInstance(objectRepository, localObjectRepository) as T
             }
             else -> throw IllegalArgumentException(
                 "Unknown ViewModel class: " + modelClass.name
@@ -55,8 +57,9 @@ class ViewModelFactory(
                 INSTANCE = ViewModelFactory(
                     Injection.provideAuthRepository(context),
                     Injection.provideUserRepository(context),
-                    Injection.provideObjectRepository(context)
-                )
+                    Injection.provideObjectRepository(context),
+                    Injection.provideLocalObjectRepository(context)
+                    )
             }
             return INSTANCE as ViewModelFactory
         }

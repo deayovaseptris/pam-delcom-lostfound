@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.ifs21017.lostfound.R
+import com.ifs21017.lostfound.data.entity.DelcomObjectEntity
 import com.ifs21017.lostfound.data.model.DelcomObject
 import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.data.remote.response.LostFoundObjectResponse
@@ -20,6 +22,8 @@ class ObjectDetailActivity : AppCompatActivity() {
         ViewModelFactory.getInstance(this)
     }
     private var isChanged: Boolean = false
+    private var isFavorite: Boolean = false
+    private var delcomLostFound: DelcomObjectEntity? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +61,14 @@ class ObjectDetailActivity : AppCompatActivity() {
             tvObjectDetailDesc.text = "Deskripsi: ${lostfound.description}"
             tvObjectDetailStatus.text = "Status: ${lostfound.status}"
             cbObjectDetailIsCompleted.isChecked = lostfound.status == "lost"
+            viewModel.getLocalObject(lostfound.id).observeOnce {
+                if(it != null){
+                    delcomLostFound = it
+                    setFavorite(true)
+                }else{
+                    setFavorite(false)
+                }
+            }
             cbObjectDetailIsCompleted.setOnCheckedChangeListener { _, isChecked ->
                 val status = if (isChecked) "Selesai" else "Belum selesai"
                 viewModel.putObject(
@@ -90,6 +102,39 @@ class ObjectDetailActivity : AppCompatActivity() {
                     }
                 }
             }
+            ivLostFoundDetailActionFavorite.setOnClickListener {
+                if(isFavorite){
+                    setFavorite(false)
+                    if(delcomLostFound != null){
+                        viewModel.deleteLocalTodo(delcomLostFound!!)
+                    }
+                    Toast.makeText(
+                        this@ObjectDetailActivity,
+                        "LostFound berhasil dihapus dari daftar favorite",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }else{
+                    delcomLostFound = DelcomObjectEntity(
+                        id = lostfound.id,
+                        title = lostfound.title,
+                        description = lostfound.description,
+                        isCompleted = lostfound.isCompleted,
+                        cover = lostfound.cover,
+                        createdAt = lostfound.createdAt,
+                        updatedAt = lostfound.updatedAt,
+                        status = ""
+                    )
+
+                    setFavorite(true)
+                    viewModel.insertLocalObject(delcomLostFound!!)
+                    Toast.makeText(
+                        this@ObjectDetailActivity,
+                        "LostFound berhasil ditambahkan ke daftar favorite",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
             ivObjectDetailActionDelete.setOnClickListener {
                 showDeleteConfirmationDialog(lostfound.id)
             }
@@ -121,7 +166,7 @@ class ObjectDetailActivity : AppCompatActivity() {
     private fun observeDeleteObject(lostfoundId: Int) {
         showComponent(false)
         showLoading(true)
-        viewModel.deleteObject(lostfoundId).observeOnce { result ->
+        viewModel.delete(lostfoundId).observeOnce { result ->
             when (result) {
                 is MyResult.Error -> {
                     showComponent(true)
@@ -143,6 +188,17 @@ class ObjectDetailActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this@ObjectDetailActivity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setFavorite(status: Boolean){
+        isFavorite = status
+        if(status){
+            binding.ivLostFoundDetailActionFavorite
+                .setImageResource(R.drawable.ic_favorite_24)
+        }else{
+            binding.ivLostFoundDetailActionFavorite
+                .setImageResource(R.drawable.ic_favorite_border_24)
+        }
     }
 
     private fun showDeleteConfirmationDialog(lostfoundId: Int) {

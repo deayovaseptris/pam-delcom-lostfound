@@ -25,9 +25,6 @@ data class LostFoundObjectResponse(
 	@field:SerializedName("user_id")
 	val userId: Int,
 
-	@field:SerializedName("author")
-	val author: Author,
-
 	@field:SerializedName("description")
 	val description: String,
 

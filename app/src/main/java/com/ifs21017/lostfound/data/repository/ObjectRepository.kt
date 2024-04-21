@@ -40,7 +40,7 @@ class ObjectRepository private constructor(
         title: String,
         description: String,
         status: String,
-        is_completed: Boolean
+        isCompleted: Boolean
     ) = flow {
         emit(MyResult.Loading)
         try {
@@ -52,7 +52,7 @@ class ObjectRepository private constructor(
                         title,
                         description,
                         status,
-                        if (is_completed) 1 else 0
+                        if (isCompleted) 1 else 0
                     )
                 )
             )
@@ -69,12 +69,12 @@ class ObjectRepository private constructor(
         }
     }
     fun getObjects(
-        is_completed: Int?,
+        isCompleted: Int?,
     ) = flow {
         emit(MyResult.Loading)
         try {
             //get success message
-            emit(MyResult.Success(apiService.getObjects(is_completed)))
+            emit(MyResult.Success(apiService.getObjects(isCompleted)))
         } catch (e: HttpException) {
             //get error message
             val jsonInString = e.response()?.errorBody()?.string()
