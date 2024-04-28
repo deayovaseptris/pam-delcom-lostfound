@@ -1,5 +1,6 @@
 package com.ifs21017.lostfound.presentation.lostfound
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -7,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.ifs21017.lostfound.R
 import com.ifs21017.lostfound.data.entity.DelcomObjectEntity
 import com.ifs21017.lostfound.data.model.DelcomObject
@@ -53,6 +55,7 @@ class ObjectDetailActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun loadObject(lostfound: LostFoundObjectResponse) {
         showComponent(true)
         binding.apply {
@@ -61,6 +64,11 @@ class ObjectDetailActivity : AppCompatActivity() {
             tvObjectDetailDesc.text = "Deskripsi: ${lostfound.description}"
             tvObjectDetailStatus.text = "Status: ${lostfound.status}"
             cbObjectDetailIsCompleted.isChecked = lostfound.status == "lost"
+            ivObjectDetailCover.visibility = View.VISIBLE
+            Glide.with(this@ObjectDetailActivity)
+                .load(lostfound.cover)
+                .placeholder(R.drawable.ic_image_24)
+                .into(ivObjectDetailCover)
             viewModel.getLocalObject(lostfound.id).observeOnce {
                 if(it != null){
                     delcomLostFound = it

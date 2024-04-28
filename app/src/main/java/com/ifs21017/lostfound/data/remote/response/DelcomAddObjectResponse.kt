@@ -17,5 +17,5 @@ data class DelcomAddObjectResponse(
 data class DataAddObjectResponse(
 
 	@field:SerializedName("lost_found_id")
-	val lostFoundId: Int
+	val lostfoundId: Int
 )

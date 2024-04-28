@@ -1,23 +1,34 @@
 package com.ifs21017.lostfound.presentation.lostfound
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.ifs21017.lostfound.R
 import com.ifs21017.lostfound.data.model.DelcomObject
 import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.databinding.ActivityObjectManageBinding
 import com.ifs21017.lostfound.helper.Utils.Companion.observeOnce
+import com.ifs21017.lostfound.helper.getImageUri
+import com.ifs21017.lostfound.helper.reduceFileImage
+import com.ifs21017.lostfound.helper.uriToFile
 import com.ifs21017.lostfound.presentation.ViewModelFactory
-import com.ifs21017.lostfound.presentation.lostfound.ObjectDetailActivity.Companion.KEY_IS_CHANGED
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 class ObjectManageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityObjectManageBinding
+    private var currentImageUri: Uri? = null
     private val viewModel by viewModels<ObjectViewModel> {
         ViewModelFactory.getInstance(this)
     }
@@ -83,6 +94,53 @@ class ObjectManageActivity : AppCompatActivity() {
                 }
                 observePostObject(title, description, status)
             }
+            btnTodoManageCamera.setOnClickListener {
+                startCamera()
+            }
+            btnTodoManageGallery.setOnClickListener {
+                startGallery()
+            }
+        }
+    }
+
+    private fun startGallery() {
+        launcherGallery.launch("image/*")
+    }
+
+    private fun startCamera() {
+        currentImageUri = getImageUri(this)
+        launcherIntentCamera.launch(currentImageUri)
+    }
+
+    private val launcherGallery = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            currentImageUri = uri
+            showImage()
+        } else {
+            Toast.makeText(
+                applicationContext,
+                "Tidak ada media yang dipilih!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun showImage() {
+        currentImageUri?.let {
+            Glide.with(this)
+                .load(it)
+                .placeholder(R.drawable.ic_image_24)
+                .into(binding.ivTodoManageCover)
+        }
+    }
+
+    private val launcherIntentCamera = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { isSuccess ->
+        if (isSuccess) {
+            showImage()
         }
     }
 
@@ -93,11 +151,14 @@ class ObjectManageActivity : AppCompatActivity() {
                     showLoading(true)
                 }
                 is MyResult.Success -> {
-                    showLoading(false)
-                    val resultIntent = Intent()
-                    resultIntent.putExtra(KEY_IS_CHANGED, true)
-                    setResult(RESULT_CODE, resultIntent)
-                    finishAfterTransition()
+                    if (currentImageUri != null) {
+                        observeAddCoverObject(result.data.lostfoundId)
+                    } else {
+                        showLoading(false)
+                        val resultIntent = Intent()
+                        setResult(RESULT_CODE, resultIntent)
+                        finishAfterTransition()
+                    }
                 }
                 is MyResult.Error -> {
                     AlertDialog.Builder(this@ObjectManageActivity).apply {
@@ -124,6 +185,13 @@ class ObjectManageActivity : AppCompatActivity() {
             val statusIndex = statusArray.indexOf(lostfound.status)
             etObjectManageStatus.setSelection(statusIndex)
 
+            if (lostfound.cover != null) {
+                Glide.with(this@ObjectManageActivity)
+                    .load(lostfound.cover)
+                    .placeholder(R.drawable.ic_image_24)
+                    .into(ivTodoManageCover)
+            }
+
             btnObjectManageSave.setOnClickListener {
                 val title = etObjectManageTitle.text.toString()
                 val description = etObjectManageDesc.text.toString()
@@ -141,6 +209,12 @@ class ObjectManageActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 observePutObject(lostfound.id, title, description, status, isCompleted)
+            }
+            btnTodoManageCamera.setOnClickListener {
+                startCamera()
+            }
+            btnTodoManageGallery.setOnClickListener {
+                startGallery()
             }
         }
     }
@@ -164,11 +238,14 @@ class ObjectManageActivity : AppCompatActivity() {
                     showLoading(true)
                 }
                 is MyResult.Success -> {
-                    showLoading(false)
-                    val resultIntent = Intent()
-                    resultIntent.putExtra(KEY_IS_CHANGED, true)
-                    setResult(RESULT_CODE, resultIntent)
-                    finishAfterTransition()
+                    if (currentImageUri != null) {
+                        observeAddCoverObject(lostfoundId)
+                    } else {
+                        showLoading(false)
+                        val resultIntent = Intent()
+                        setResult(RESULT_CODE, resultIntent)
+                        finishAfterTransition()
+                    }
                 }
                 is MyResult.Error -> {
                     AlertDialog.Builder(this@ObjectManageActivity).apply {
@@ -179,6 +256,52 @@ class ObjectManageActivity : AppCompatActivity() {
                         show()
                     }
                     showLoading(false)
+                }
+            }
+        }
+    }
+
+    private fun observeAddCoverObject(
+        todoId: Int,
+    ) {
+        val imageFile =
+            uriToFile(currentImageUri!!, this).reduceFileImage()
+        val requestImageFile =
+            imageFile.asRequestBody("image/jpeg".toMediaType())
+        val reqPhoto =
+            MultipartBody.Part.createFormData(
+                "cover",
+                imageFile.name,
+                requestImageFile
+            )
+        viewModel.addCoverObject(
+            todoId,
+            reqPhoto
+        ).observeOnce { result ->
+            when (result) {
+                is MyResult.Loading -> {
+                    showLoading(true)
+                }
+                is MyResult.Success -> {
+                    showLoading(false)
+                    val resultIntent = Intent()
+                    setResult(RESULT_CODE, resultIntent)
+                    finishAfterTransition()
+                }
+                is MyResult.Error -> {
+                    showLoading(false)
+                    AlertDialog.Builder(this@ObjectManageActivity).apply {
+                        setTitle("Oh No!")
+                        setMessage(result.error)
+                        setPositiveButton("Oke") { _, _ ->
+                            val resultIntent = Intent()
+                            setResult(RESULT_CODE, resultIntent)
+                            finishAfterTransition()
+                        }
+                        setCancelable(false)
+                        create()
+                        show()
+                    }
                 }
             }
         }

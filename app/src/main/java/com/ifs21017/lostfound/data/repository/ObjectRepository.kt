@@ -5,6 +5,7 @@ import com.ifs21017.lostfound.data.remote.MyResult
 import com.ifs21017.lostfound.data.remote.response.DelcomResponse
 import com.ifs21017.lostfound.data.remote.retrofit.IApiService
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
 import retrofit2.HttpException
 
 class ObjectRepository private constructor(
@@ -125,6 +126,28 @@ class ObjectRepository private constructor(
             )
         }
     }
+
+    fun addCoverObject(
+        objectId: Int,
+        cover: MultipartBody.Part,
+    ) = flow {
+        emit(MyResult.Loading)
+        try {
+            //get success message
+            emit(MyResult.Success(apiService.addCoverObject(objectId, cover)))
+        } catch (e: HttpException) {
+            //get error message
+            val jsonInString = e.response()?.errorBody()?.string()
+            emit(
+                MyResult.Error(
+                    Gson()
+                        .fromJson(jsonInString, DelcomResponse::class.java)
+                        .message
+                )
+            )
+        }
+    }
+
     companion object {
         @Volatile
         private var INSTANCE: ObjectRepository? = null
