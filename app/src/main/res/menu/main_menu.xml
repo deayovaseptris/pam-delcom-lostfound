@@ -11,6 +11,14 @@
             android:title="Logout"
             app:showAsAction="never" />
         <item
+            android:id="@+id/mainMenuAllData"
+            android:title="All Data"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/mainMenuMyData"
+            android:title="My Data"
+            app:showAsAction="never" />
+        <item
             android:id="@+id/mainMenuFavoriteTodos"
             android:title="Favorite Todos"
             app:showAsAction="never" />
